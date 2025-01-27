@@ -4,6 +4,7 @@
 import pygame
 import sys
 from constants import *
+from player import Player
 
 def main():
     pygame.init()
@@ -14,9 +15,17 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     black = (0,0,0)
     
+    clock = pygame.time.Clock()
+    dt = 0
+    
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    
     while True:
         screen.fill(black)
+        player.draw(screen)
         pygame.display.flip()
+        
+        dt = clock.tick(60) / 1000
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
