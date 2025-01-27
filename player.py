@@ -1,5 +1,5 @@
 import pygame
-from constants import PLAYER_RADIUS, PLAYER_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, SHOT_RADIUS, PLAYER_SHOOT_SPEED
+from constants import PLAYER_RADIUS, PLAYER_SPEED, SCREEN_WIDTH, SCREEN_HEIGHT, SHOT_RADIUS, PLAYER_SHOOT_SPEED, PLAYER_SHOOT_COOLDOWN
 from shapes import CircleShape
 from shot import Shot
 
@@ -13,6 +13,7 @@ class Player(CircleShape, pygame.sprite.Sprite):
         self.add(self.containers)
         
         self.rotation = 0
+        self.shoot_timer = 0  # Initialize timer at 0
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -34,12 +35,16 @@ class Player(CircleShape, pygame.sprite.Sprite):
         self.position += forward * PLAYER_SPEED * dt
 
     def shoot(self):
-        # Create shot at player position
-        shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
-        # Calculate shot velocity
-        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+        # Only shoot if the cooldown timer has expired
+        if self.shoot_timer <= 0:
+            shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
+            shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+            self.shoot_timer = PLAYER_SHOOT_COOLDOWN  # Reset the timer
 
     def update(self, dt):
+        # Decrease the shoot timer
+        self.shoot_timer -= dt
+        
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_w]:
